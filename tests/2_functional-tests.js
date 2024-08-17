@@ -164,4 +164,92 @@ suite("Functional Tests", () => {
          done();
        });
   });
+
+  // #10
+  test("Check a puzzle placement with missing required fields: POST request to /api/check", (done) => {
+    chai
+      .request(server)
+      .post("/api/check")
+      .send({})
+      .end((err, res) => {
+        assert.equal(res.status, 200);
+        assert.equal(res.body.error, "Required field(s) missing");
+        done();
+      });
+  })
+
+  // #11
+  test("Check a puzzle placement with invalid characters: POST request to /api/check", (done) => {
+    chai
+      .request(server)
+      .post("/api/check")
+      .send({
+        puzzle:
+          "1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.AB.",
+        coordinate: "A1",
+        value: "1",
+      })
+      .end((err, res) => {
+        assert.equal(res.status, 200);
+        assert.equal(res.body.error, "Invalid characters in puzzle");
+        done();
+      });
+  });
+
+  // #12
+  test("Check a puzzle placement with incorrect length: POST request to /api/check", (done) => {
+    chai
+      .request(server)
+      .post("/api/check")
+      .send({
+        puzzle:
+          "1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.3",
+        coordinate: "A1",
+        value: "1",
+      })
+      .end((err, res) => {
+        assert.equal(res.status, 200);
+        assert.equal(
+          res.body.error,
+          "Expected puzzle to be 81 characters long"
+        );
+        done();
+      });
+  });
+
+  // #13
+  test("Check a puzzle placement with invalid placement coordinate: POST request to /api/check", (done) => {
+    chai
+      .request(server)
+      .post("/api/check")
+      .send({
+        puzzle:
+          "1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.",
+        coordinate: "A10",
+        value: "1",
+      })
+      .end((err, res) => {
+        assert.equal(res.status, 200);
+        assert.equal(res.body.error, "Invalid coordinate");
+        done();
+      });
+  });
+
+  // #14
+  test("Check a puzzle placement with invalid placement value: POST request to /api/check", (done) => {
+    chai
+      .request(server)
+      .post("/api/check")
+      .send({
+        puzzle:
+           "1.5..2.84..63.12.7.2..5.....9..1....8.2.3674.3.7.2..9.47...8..1..16....926914.37.",
+         coordinate: "A1",
+         value: "10",
+       })
+       .end((err, res) => {
+         assert.equal(res.status, 200);
+         assert.equal(res.body.error, "Invalid value");
+         done();
+       });
+  });
 });
