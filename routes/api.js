@@ -43,10 +43,11 @@ module.exports = function (app) {
       const regValid = solver.checkRegionPlacement(puzzle, row, col, value);
       const valid = rowValid && colValid && regValid;
 
-      let conflict = [];
-      if (!rowValid) conflict.push('row');
-      if (!colValid) conflict.push('column');
-      if (!regValid) conflict.push('region');
+      let conflict = '';
+
+      if (!rowValid) conflict += 'row ';
+      if (!colValid) conflict += 'column ';
+      if (!regValid) conflict += 'region ';
 
       return res.json({ valid, conflict });
     });
@@ -74,7 +75,7 @@ module.exports = function (app) {
 
       const solution = solver.solve(puzzle);
       if(solution.error) {
-        return res.json(solution);
+        return res.json({ error: 'Puzzle cannot be solved' });
       }
 
       return res.json({ solution });
