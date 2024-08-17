@@ -11,7 +11,7 @@ class SudokuSolver {
 
   checkRowPlacement(puzzleString, row, column, value) {
     const grid = this.convertPuzzleToGrid(puzzleString);
-    const rowIndex = row.charCodeAt(0) - 65;
+    const rowIndex = row.charCodeAt() - 65;
     value = value.toString();
 
     for (let col = 0; col < 9; col++) {
@@ -28,7 +28,7 @@ class SudokuSolver {
     value = value.toString();
 
     for (let ro = 0; ro < 9; ro++) {
-      if (grid[ro][colIndex] === value && ro !== row.charCodeAt(0) - 65) {
+      if (grid[ro][colIndex] === value && ro !== row.charCodeAt() - 65) {
         return false;
       }
     }
@@ -58,12 +58,15 @@ class SudokuSolver {
   }
 
   solve(puzzleString) {
-    let grid = this.convertPuzzleToGrid(puzzleString);
-    if (!this.solveSudoku(grid)) {
-      return { error: "Puzzle cannot be solved" };
+    const grid = this.convertPuzzleToGrid(puzzleString);
+    // Validate the puzzle string
+    const validation = this.validate(puzzleString);
+    if (validation.error || !this.solveSudoku(grid)) {
+      return { error: "Puzzle cannot be solved or invalid" };
     }
     return this.convertGridToPuzzle(grid);
   }
+  
 
   // helper function to convert a puzzle string into grid (2D array)
   convertPuzzleToGrid(puzzleString) {
@@ -88,6 +91,7 @@ class SudokuSolver {
         if (grid[row][col] === ".") {
           // Try each number from 1 to 9
           for (let num = 1; num <= 9; num++) {
+            let numStr = num.toString();
             // Check if placing 'num' in the current cell is valid
             if (
               this.checkRowPlacement(grid.map(row => row.join('')).join(''), String.fromCharCode(row + 65), col + 1, numStr) &&
